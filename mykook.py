@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import copy
-from weakref import ref
 from pyrser import meta
 from pyrser.grammar import Grammar
 from cnorm.parsing.declaration import Declaration
