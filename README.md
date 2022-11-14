@@ -1,2 +1,2 @@
 # BiBook
-kooc base project completion (here named kook)
+kooc Epitech base project completion (here named kook)
