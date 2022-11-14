@@ -1,0 +1,10 @@
+module Test
+{
+	int a;
+	double a = 3.5555;
+	int ABC();
+	char* def(char *k);
+	void AA(int i, double j);
+	void BB(const char c);
+	void Z(const char *c);
+}

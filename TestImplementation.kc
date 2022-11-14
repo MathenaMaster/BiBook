@@ -1,0 +1,44 @@
+#include <stdio.h>
+
+import "TestImplementation.kh"
+
+implementation Test
+{
+	int ABC()
+	{
+		int a;
+		a = [ (int) Test.a ];
+		printf("%d\n", a);
+		return (a);
+	}
+	char* def(char *k)
+	{
+    	for (int i = 0; k[i]; ++i) (k[i]) += 3;
+    	return (k);
+	}
+	void AA(int i, double j)
+	{
+		printf("i: %d, j: %f\n", i, j);
+	}
+	void BB(const char c)
+	{
+	}
+	void Z(const char *c)
+	{
+		printf("%s\n", c);
+	}
+}
+
+int	main()
+{
+	char k[8] = "Cesar";
+	[ (int) Test.a ] = 2;
+	printf("%d\n", [ (int) Test.a ]);
+	int b = [ (int) Test.ABC ]();
+	printf("%d\n", b + 1);
+	[ (void) Test.Z ]("rotatate");
+	[ (void) Test.AA ]([ (int) Test.a ], [ (double) Test.a ]);
+	printf("Qui est-ce ? C'est %s ?\n", [ (char*) Test.def ](k));
+	return (0);
+}
+
