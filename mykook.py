@@ -11,7 +11,6 @@ from cnorm.nodes import *
 from cnorm.passes import to_c
 
 import mymodule as module
-import mymangling as mangling
 
 class KOOK(Declaration, Grammar):
     entry = "translation_unit"
