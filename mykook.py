@@ -13,14 +13,7 @@ from cnorm.passes import to_c
 import mymodule as module
 import mymangling as mangling
 
-#type_called = None
-#id_mod = ""
-#id_item = ""
-
 class KOOK(Declaration, Grammar):
-    #id_mod = ""
-    #id_item = ""
-    #type_called = None
     entry = "translation_unit"
     grammar = """
 
