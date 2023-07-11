@@ -1,9 +1,13 @@
 module Test
 {
-	int a;
+	struct carotte {
+		int k2;
+		double k3;
+	};
+	int a = 2222;
 	double a = 3.5555;
 	int ABC();
-	char* def(char *k);
+	char * def(char *k);
 	void AA(int i, double j);
 	void BB(const char c);
 	void Z(const char *c);

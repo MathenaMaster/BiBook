@@ -18,7 +18,7 @@ for arg in range(1, len(sys.argv)):
         except Exception as e:
             print("Kook to_c content recuperation FAILED")
             print("Diagnostic args are:", e.args)
-            print("Diagnostic traceback is:", e.with_traceback())
+            print("Diagnostic traceback is:", e.with_traceback(None))
     elif ext == ".c" or ext == ".h":
         res = kook.get_tree(sys.argv[arg])
         print("Normal", ext, " C/H file treated:", sys.argv[arg])

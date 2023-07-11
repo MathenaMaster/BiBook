@@ -18,6 +18,8 @@ def mangle_identifier(type):
             mangled_identifier += "k"
         elif isinstance(tmp, PointerType):
             mangled_identifier += "p"
+        elif isinstance(tmp, ComposedType):
+            mangled_identifier += "c"
         tmp = tmp._decltype
     return mangled_identifier   
 
@@ -41,7 +43,9 @@ def mangle_identifier_from_name(type):
         mangled_identifier += "float"
     elif "double" in type:
         mangled_identifier += "double"
-    if "*" in type:
+    if "struct" in type or isinstance(type, ComposedType):
+        mangled_identifier += "struct"
+    if "*" in type or isinstance(type._decltype, PointerType):
         mangled_identifier += "p"
     print("mangled _identifier_from_name", mangled_identifier)
     final_mangle = "_" + str(len(mangled_identifier)) + mangled_identifier
@@ -68,6 +72,8 @@ def mangle_function_identifier_from_name(fulltype, type):
         mangled_identifier += "float"
     elif "double" in type:
         mangled_identifier += "double"
+    if "struct" in type or isinstance(fulltype, ComposedType):
+        mangled_identifier += "struct"
     if "*" in type or isinstance(fulltype._decltype, PointerType):
         mangled_identifier += "p"
     print("mangled _identifier_from_name:", mangled_identifier)
@@ -76,15 +82,23 @@ def mangle_function_identifier_from_name(fulltype, type):
     return final_mangle
 
 
-def mangle_symbol(module_name, decl):
+def mangle_symbol(module_name, type): #decl):
     mangled_name = "_" + str(len(module_name)) + module_name
-    type = decl._ctype
-    if isinstance(type, PrimaryType):
+    #type = decl._ctype
+    if isinstance(type, PrimaryType) or isinstance(type, FuncType):
         mangled_name += mangle_identifier(type)
-        mangled_name += "_" + str(len(decl._name)) + decl._name
-    elif isinstance(type, FuncType):
-        mangled_name += mangle_identifier(type)
-        mangled_name += "_" + str(len(decl._name)) + decl._name
+        mangled_name += "_" + str(len(module_name)) + module_name
+    elif isinstance(type, ComposedType):
+        mangled_name += mangle_identifier_from_name(type)
+        mangled_name += "_" + str(len(type._identifier)) + type._identifier
+        #mangled_name += "_" + str(len(module_name)) + module_name
+        #mangled_name += "_" + str(len(decl._name)) + decl._name
+    #elif isinstance(type, FuncType):
+        #mangled_name += mangle_identifier(type)
+        #mangled_name += "_" + str(len(decl._name)) + decl._name
+    #elif isinstance(type, ComposedType):
+        #mangled_name += mangle_identifier(type)
+        #mangled_name += "_" + str(len(decl._name)) + decl._name
     return mangled_name
 
 def mangle_cast(module_name, identifier):
@@ -93,20 +107,20 @@ def mangle_cast(module_name, identifier):
     return mangled_name
 
 def mangle_variable(module_name, identifier, variable):
-    print("MANGLE_VARIABLE Content, identifier:", identifier)
-    print("MANGLE_VARIABLE Content, variable:", variable)
-    print("MANGLE_VARIABLE Content, module:", module_name)
-    mangled_name = "_" + str(len(module_name)) + module_name
-    print("mangle_variable:", mangled_name, ",", module_name, ",", identifier._ctype._identifier, ",", variable)
+    print("MANGLE_VARIABLE Content, identifier:", identifier) #[0])
+    print("MANGLE_VARIABLE Content, variable:", variable[0])
+    print("MANGLE_VARIABLE Content, module:", module_name[0])
+    mangled_name = "_" + str(len(module_name[0])) + str(module_name[0])
+    print("mangle_variable:", mangled_name, ",", module_name[0], ",", identifier._ctype._identifier, ",", variable[0])
     mangeled_id = mangle_function_identifier_from_name(identifier._ctype, identifier._ctype._identifier)
     mangled_name += str(mangeled_id)
-    print("mangle_variable:", mangled_name, ",", module_name, ",", mangeled_id, ",", variable)
-    mangled_variable = "_" + str(len(variable)) + variable
+    print("mangle_variable:", mangled_name, ",", module_name[0], ",", mangeled_id, ",", variable[0])
+    mangled_variable = "_" + str(len(variable[0])) + variable[0]
     mangled_name += mangled_variable
-    print("mangle_variable:", mangled_name, ",", module_name, ",", mangeled_id, ",", mangled_variable)
+    print("mangle_variable:", mangled_name, ",", module_name[0], ",", mangeled_id, ",", mangled_variable)
     return mangled_name
 
-def mangle_function(module_name, var_type, function_name):
+def mangle_function(module_name, var_type, function_name : str):
     print("MANGLE_FUNCTION Content, identifier:", var_type)
     print("MANGLE_FUNCTION Content, variable:", function_name)
     print("MANGLE_FUNCTION Content, module:", module_name)
@@ -115,7 +129,7 @@ def mangle_function(module_name, var_type, function_name):
     mangled_type = mangle_function_identifier_from_name(var_type, var_type._identifier)
     print("Mangled func type:", mangled_type)
     mangled_name += str(mangled_type)
-    mangled_func = "_" + str(len(function_name)) + str(function_name)
+    mangled_func = "_" + str(len(str(function_name))) + str(function_name)
     print("Mangled func name:", mangled_func)
     mangled_name += str(mangled_func)
     print("Total mangeld func name:", mangled_name)

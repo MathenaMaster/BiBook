@@ -30,7 +30,7 @@ test_binary:
 		./$(NAME)
 
 destroy:
-		rm -rf $(SRC) $(OUTFILE) $(ERRFILE)
+		rm -rf $(NAME) $(SRC) $(OBJ) $(OUTFILE) $(ERRFILE)
 
 
 .PHONY: 	all clean fclean tester_la_recette test_binary destroy
