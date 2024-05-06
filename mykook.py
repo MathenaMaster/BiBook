@@ -20,18 +20,13 @@ class KOOK(Declaration, Grammar):
     entry = "translation_unit"
     grammar = """
 
-        expression_kook_primary_expression =
-        [
-            
-            Expression.primary_expression:>_
-            | kook_instruction #new_kook_id(_)
-            
-        ]
+        
 
 
         get_kook_ident =
         [
-            '(' type_name:type ')' id:mod '.' id:var #add_kook_ident(type, mod, var)
+            [ '(' "struct" ')' identifier:mod '.' identifier:var  #add_struct_ident(mod, var)
+            | '(' type_name:type ')' identifier:mod '.' identifier:var #add_kook_ident(type, mod, var) ]
         ]
 
         kook_var =
@@ -41,17 +36,35 @@ class KOOK(Declaration, Grammar):
 
         kook_instruction =
         [
-            [ '[' kook_var ']' ]:>_
+            [ '[' kook_var:>_ ']' ] #new_kook_id(_)
         ]
 
-        kook_identifier =
+
+        kook_primary_expression =
         [
-            identifier
-            | kook_instruction #new_kook_id(_)
+            [ Declaration.primary_expression
+            | kook_instruction ]:>_
+        ]
+    
+        
+        kook_conditional_expression =
+        [
+            [ Expression.conditional_expression
+            | kook_instruction ]:>_
         ]
 
+        assignement_expression =
+        [
+            kook_conditional_expression:>_
+            [
+                assign_op:op
+                assignement_expression:param
+                #new_binary(_, op, param)
+            ]*
+        ]
+        
         postfix_expression = [
-            expression_kook_primary_expression:>_
+            kook_primary_expression:>_
             [
                 __scope__:pres
                 [
@@ -78,10 +91,10 @@ class KOOK(Declaration, Grammar):
                 '(' [type_name ',' postfix_expression]:bof ')'
                 #new_builtoffset(_, bof)
             |
-            expression_kook_primary_expression:>_
+            kook_primary_expression:>_
         ]
 
-    
+        
         declaration =
         [
             [ kook_import
@@ -345,12 +358,16 @@ def add_assign(self, ast, mytype, owner, variable, othvar):
 
 @meta.hook(KOOK)
 def new_kook_id(self, ast):
+    print("new_kook_id ast:", ast)
     popped = self.type_called.pop() #len(self.type_called) - 1)
+    #ast.set(nodes.Id(copy.deepcopy(popped._name)))
+    mod = self.id_mod.pop() #len(self.id_mod) - 1)
+    item = self.id_item.pop() #len(self.id_item) - 1)
+    print("new_kook_id", popped._name, "mod:", mod, "item:", item)
     ast.set(nodes.Id(copy.deepcopy(popped._name)))
     #self.type_called.pop(len(self.type_called) - 1)
-    self.id_mod.pop() #len(self.id_mod) - 1)
-    self.id_item.pop() #len(self.id_item) - 1)
     return True
+
 
 #@meta.hook(KOOK)
 #def add_typed_call_cast(self, ast, mod, var_type):
@@ -367,20 +384,29 @@ def add_kook_element(self, current_block, kook_element):
 
 @meta.hook(KOOK)
 def add_typed_call_variable(self, ast):
-    print("TYPE:", self.type_called[-1])
-    print("MODULE:", self.id_mod[-1])
-    print("MYVARIABLE:", self.id_item[-1])
-    beg = module.AtTypedCall(ast.ref, self.type_called[-1:], self.id_mod[-1:], self.id_item[-1:]) #var_type, self.value(mod), self.value(variable))
-    self.type_called.pop() #len(self.type_called) - 1)
-    self.id_mod.pop() #len(self.id_mod) - 1)
-    self.id_item.pop() #len(self.id_item) - 1)
+    print("BEFORE TYPE:", self.type_called[-1])
+    print("BEFORE MODULE:", self.id_mod[-1])
+    print("BEFORE MYVARIABLE:", self.id_item[-1])
+    beg = module.AtTypedCall(ast.ref, self.type_called[-1], self.id_mod[-1], self.id_item[-1]) #var_type, self.value(mod), self.value(variable))
+    #beg = module.AtTypedCall(ast.ref, self.type_called.pop(), self.id_mod.pop(), self.id_item.pop()) #var_type, self.value(mod), self.value(variable))
+    #self.type_called.pop() #len(self.type_called) - 1)
+    #self.id_mod.pop() #len(self.id_mod) - 1)
+    #self.id_item.pop() #len(self.id_item) - 1)
+    print("AFTER TYPE:", self.type_called[-1])
+    print("AFTER MODULE:", self.id_mod[-1])
+    print("AFTER MYVARIABLE:", self.id_item[-1])
     print("AST add_typed_call_variable dict:")
     print(ast.__dict__)
-    print("To insert name:", beg.var_type[0]._name)
+    print("To insert name:", beg.var_type._name)
     #self.type_called[-1] = beg.var_type[0]
-    self.type_called.append(beg.var_type[0])
-    self.id_mod.append(None)
-    self.id_item.append(None)
+    #self.type_called.append(beg.var_type)
+    #self.id_mod.append(None)
+    #self.id_item.append(None)
+    print("type called:", self.type_called[-1], "mod:", self.id_mod[-1], "item:", self.id_item[-1])
+    #self.type_called.pop()
+    #self.id_mod.pop()
+    #self.id_item.pop()
+    #ast.ref.body[0]._name = beg.var_type._name
     print("In ast dict:")
     print(ast.__dict__)
     print("body dict:")
@@ -417,14 +443,14 @@ def add_full_typed_call_variable(self, ast, var_type, mod, name):
 
 @meta.hook(KOOK)
 def add_typed_call_function(self, ast):
-    print("MYFUNCTION:", self.id_item[-1:])
-    print("MODULE:", self.id_mod[-1:])
-    print("of global type:", self.type_called[-1:])
-    beg = module.AtTypedCallFunction(ast.ref, self.type_called[-1:], self.id_mod[-1:], self.id_item[-1:]) #, params)
+    print("MYFUNCTION:", self.id_item[-1])
+    print("MODULE:", self.id_mod[-1])
+    print("of global type:", self.type_called[-1])
+    beg = module.AtTypedCallFunction(ast.ref, self.type_called[-1], self.id_mod[-1], self.id_item[-1]) #, params)
     ast.ref.body.append(beg)
-    self.type_called.pop(len(self.type_called) -1)
-    self.id_mod.pop(len(self.id_mod) - 1)
-    self.id_item.pop(len(self.id_item) - 1)
+    #self.type_called.pop()
+    #self.id_mod.pop()
+    #self.id_item.pop()
     print("BEG IN ADD_TYPED_CALL_FUNCTION:", beg.__dict__)
     return True
 
@@ -436,7 +462,22 @@ def add_kook_ident(self, var_type, mod, ident_to_get):
     self.type_called.append(var_type)
     self.id_mod.append(self.value(mod))
     self.id_item.append(self.value(ident_to_get))
-    print("now ident to formulate values:", self.id_mod[-1:], "of type:", self.type_called[-1:], ", and of name:", self.id_item[-1:])
+    print("now ident to formulate values:", self.id_mod[-1], "of type:", self.type_called[-1], ", and of name:", self.id_item[-1])
+    return True
+
+@meta.hook(KOOK)
+def add_struct_ident(self, mod, ident_to_get): #, ident_to_get):
+    var_type = ComposedType(ident_to_get) #Decl(ident_to_get, ComposedType('struct')) #CType() #ComposedType(ident_to_get)
+    #print("struct var_type", var_type)
+    #var_type._identifier = ident_to_get
+    print("struct var_type identified:", var_type, "mod:", mod, "ident_to_get:", ident_to_get)
+    #self.type_called = var_type
+    #self.id_mod = self.value(mod)
+    #self.id_item = self.value(ident_to_get)
+    self.type_called.append(var_type)
+    self.id_mod.append(self.value(mod))
+    self.id_item.append(self.value(ident_to_get))
+    print("now structure ident to formulate values:", self.id_mod[-1], "of type:", self.type_called[-1], ", and of name:", self.id_item[-1])
     return True
 
 

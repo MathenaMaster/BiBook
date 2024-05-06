@@ -163,16 +163,16 @@ class AtTypedCall:
         self.variable = variable
         print("AtTypedCall __init__ entry; type:", var_type, "module:", mod, "and variable name:", variable)
         print("AtTypedCall __init__ retained; type:", self.var_type, "module:", self.mod, "and variable name:", self.variable)
-        self.var_type[0]._name = mangling.mangle_variable(self.mod, self.var_type[0], self.variable)
-        self.var_type[0]._storage = nodes.Storages.EXTERN
+        self.var_type._name = mangling.mangle_variable(self.mod, self.var_type, self.variable)
+        self.var_type._storage = nodes.Storages.EXTERN
         self.defined = []
         print("ATTYPEDCALL HERE:", self.here())
-        print("With Extern storage value:", self.var_type[0]._storage)
-        print("AtTypedCall init named:", self.var_type[0]._name, ", var_type:", self.var_type[0], ", module:", self.mod, ", nonmangled variable name:", self.variable)
-        print(self.var_type[0]._name, "added to previous body that values now:")
+        print("With Extern storage value:", self.var_type._storage)
+        print("AtTypedCall init named:", self.var_type._name, ", var_type:", self.var_type, ", module:", self.mod, ", nonmangled variable name:", self.variable)
+        print(self.var_type._name, "added to previous body that values now:")
         #self.here().body[0]._name = self.var_type[0]._name
-        self.here().body.append(self.var_type)
-        print(self.here().body[-1])
+        #self.here().body.append(self.var_type)
+        print(self.here().body)
         print("")
 
     def doTrans(self, defined):

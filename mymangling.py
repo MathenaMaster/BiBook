@@ -107,17 +107,26 @@ def mangle_cast(module_name, identifier):
     return mangled_name
 
 def mangle_variable(module_name, identifier, variable):
+    mangeled_id = ""
     print("MANGLE_VARIABLE Content, identifier:", identifier) #[0])
-    print("MANGLE_VARIABLE Content, variable:", variable[0])
-    print("MANGLE_VARIABLE Content, module:", module_name[0])
-    mangled_name = "_" + str(len(module_name[0])) + str(module_name[0])
-    print("mangle_variable:", mangled_name, ",", module_name[0], ",", identifier._ctype._identifier, ",", variable[0])
-    mangeled_id = mangle_function_identifier_from_name(identifier._ctype, identifier._ctype._identifier)
+    print("MANGLE_VARIABLE Content, variable:", variable)
+    print("MANGLE_VARIABLE Content, module:", module_name)
+    mangled_name = "_" + str(len(module_name)) + str(module_name)
+    if isinstance(identifier, ComposedType):
+        print("mangle_variable:", mangled_name, ",", module_name, ",", identifier._identifier, ",", variable)
+        mangeled_id = mangle_function_identifier_from_name(identifier, identifier._identifier)
+    #elif isinstance(identifier, CType):
+        #print("mangle_variable:", mangled_name, ",", module_name, ",", identifier._ctype._identifier, ",", variable)
+        #mangeled_id = mangle_function_identifier_from_name(identifier, identifier._identifier)
+    else: # elif isinstance(identifier, Decl): #elif isinstance(identifier, CType):
+        print("mangle_variable:", mangled_name, ",", module_name, ",", identifier._ctype._identifier, ",", variable)
+        mangeled_id = mangle_function_identifier_from_name(identifier._ctype, identifier._ctype._identifier)
+
     mangled_name += str(mangeled_id)
-    print("mangle_variable:", mangled_name, ",", module_name[0], ",", mangeled_id, ",", variable[0])
-    mangled_variable = "_" + str(len(variable[0])) + variable[0]
+    print("mangle_variable:", mangled_name, ",", module_name, ",", mangeled_id, ",", variable)
+    mangled_variable = "_" + str(len(variable)) + variable
     mangled_name += mangled_variable
-    print("mangle_variable:", mangled_name, ",", module_name[0], ",", mangeled_id, ",", mangled_variable)
+    print("mangle_variable:", mangled_name, ",", module_name, ",", mangeled_id, ",", mangled_variable)
     return mangled_name
 
 def mangle_function(module_name, var_type, function_name : str):

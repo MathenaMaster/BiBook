@@ -41,9 +41,18 @@ int	main()
 	[ (void) Test.AA ]([ (int) Test.a ], [ (double) Test.a ]);
 	printf("Qui est-ce ? C'est %s ?\n", [ (char *) Test.def ](k));
 	[ (struct) Test.carotte ].k2 = 2;
+	[ (struct) Test.carotte ].k3 = 3;
 	// not working //[ (struct) Test.carotte ].k3 = 3;
-	// not working //printf("Ma carotte 2 est: %d\n", [ (struct) Test.carotte ].k2);
+	//printf("Ma carotte 2 est: %d\n", [ (struct) Test.carotte ].k2);
 	// not working //printf("Ma carotte 3 est: %d\n", [ (struct) Test.carotte ].k3);
+
+	[ (void) Test.AA ]([ (struct) Test.carotte ].k2, [ (struct) Test.carotte ].k3);
+
+	//[ (struct) Test.carotte ].k3 = 3;
+	//[ (struct) Test.carotte ] = { 2, 3.333 };
+	printf("Ma carotte 2 est: %d\n", [ (struct) Test.carotte ].k2);
+	printf("Ma carotte 3 est: %f\n", [ (struct) Test.carotte ].k3);
+
 	printf("test anti-carambolage %d\n", 10);
 	return (0);
 }
