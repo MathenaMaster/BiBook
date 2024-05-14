@@ -42,7 +42,7 @@ class KOOK(Declaration, Grammar):
 
         kook_primary_expression =
         [
-            [ Declaration.primary_expression
+            [ Expression.primary_expression
             | kook_instruction ]:>_
         ]
     
