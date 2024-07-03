@@ -53,6 +53,9 @@ int	main()
 	printf("Ma carotte 2 est: %d\n", [ (struct) Test.carotte ].k2);
 	printf("Ma carotte 3 est: %f\n", [ (struct) Test.carotte ].k3);
 
+	if (!![(int) Test.a]) {
+		printf("carotte au max %d\n", [(int) Test.a]);
+	}
 	printf("test anti-carambolage %d\n", 10);
 	return (0);
 }

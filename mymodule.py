@@ -59,26 +59,6 @@ class AtModule:
         print("")
         return declared
 
-    #def Bib_to_c(self, ast, strct : nodes.ComposedType):
-        #declared = []
-        #ast.append(Raw("struct " + strct._identifier + " {"))
-        #for decl in self.base.body:
-            #decl._name = mangling.mangle_function(self.mname, decl._ctype, decl._name)
-            #print("Mangled decl:", decl._name)
-            #decl._ctype._specifier = Specifiers.STRUCT
-            #copied_decl = copy.deepcopy(decl)
-            #print("Adding:", copied_decl, "in types:", self.here().types)
-            #print("Of that here:", self.here())
-            #print("Appending decl:", copied_decl)
-            #print("To body:", self.here().body)
-            #self.here().body.append(copied_decl)
-            #declared.append(copied_decl)
-            #print("Declared now values:", declared)
-        #ast.append(Raw("};"))
-        #print("Before bib AtModule doTrans exit, declared now values:", declared)
-        #print("Last bib ADD struct statement:", self.base.body.__dict__)
-        #print("")
-        #return declared
 
 class AtImport:
     def __init__(self, here, fname, idx):

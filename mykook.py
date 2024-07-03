@@ -94,6 +94,11 @@ class KOOK(Declaration, Grammar):
             kook_primary_expression:>_
         ]
 
+        constant_expression =
+        [
+            kook_conditional_expression
+        ]
+
         
         declaration =
         [
@@ -364,7 +369,7 @@ def new_kook_id(self, ast):
     mod = self.id_mod.pop() #len(self.id_mod) - 1)
     item = self.id_item.pop() #len(self.id_item) - 1)
     print("new_kook_id", popped._name, "mod:", mod, "item:", item)
-    ast.set(nodes.Id(copy.deepcopy(popped._name)))
+    ast.set(nodes.Id(popped._name)) #copy.deepcopy(popped._name)))
     #self.type_called.pop(len(self.type_called) - 1)
     return True
 
